@@ -4,8 +4,9 @@ const dotenv = require('dotenv');
 const { Pool } = require('pg');
   
 dotenv.config();
-
-;
+// body parser middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 const pool = new Pool({
     // connect with  connection string
@@ -39,7 +40,7 @@ app.get("/hotel/:id", function (req, res) {
       res.json(result.rows);
     })
   })
-
+// Add new booking
 app.post("/bookings", (req, res) => {
     // let name = req.body.name;
     // let checkindate = request.body.checkindate;
@@ -49,7 +50,7 @@ app.post("/bookings", (req, res) => {
         res.json(result.rows);
     });
 });
-
+//  delete booking
 app.delete("/booking/:id", (req,res) => {
     let sql = `DELETE FROM bookings where ${req.params.id} = bookings.id`;
     pool.query(sql, (err,result) => {
@@ -59,7 +60,20 @@ app.delete("/booking/:id", (req,res) => {
     })
 })
 
-
+// update booking
+app.put("/booking/:id", (req,res) => {
+    let body = req.body;
+    let sql = `UPDATE bookings
+               SET nights=${body.nights},
+               customer_id=${body.customer_id},
+               checkin_date=CONVERT(${body.checkin_date},DATETIME)
+               WHERE ${req.params.id} = bookings.id`
+    pool.query(sql, (err,result) => {
+        if(err) throw err;
+        res.send("item has been updated.")
+        console.log(result);
+    })
+})
 
 app.listen(3000, function() {
     console.log("Server is listening on port 3000. Ready to accept requests!");
