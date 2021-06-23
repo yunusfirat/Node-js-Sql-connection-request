@@ -55,7 +55,6 @@ app.delete("/booking/:id", (req,res) => {
     let sql = `DELETE FROM bookings where ${req.params.id} = bookings.id`;
     pool.query(sql, (err,result) => {
         if(err) throw err;
-        console.log(result);
         res.send("item has been deleted.")
     })
 })
@@ -66,7 +65,7 @@ app.put("/booking/:id", (req,res) => {
     let sql = `UPDATE bookings
                SET nights=${body.nights},
                customer_id=${body.customer_id},
-               checkin_date=CONVERT(${body.checkin_date},DATETIME)
+               checkin_date=CAST('${body.checkin_date}' AS DATE)
                WHERE ${req.params.id} = bookings.id`
     pool.query(sql, (err,result) => {
         if(err) throw err;
@@ -75,6 +74,6 @@ app.put("/booking/:id", (req,res) => {
     })
 })
 
-app.listen(3000, function() {
-    console.log("Server is listening on port 3000. Ready to accept requests!");
+app.listen(5000, function() {
+    console.log("Server is listening on port 5000. Ready to accept requests!");
 });
